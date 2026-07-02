@@ -1,0 +1,25 @@
+name: track
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - setuptools
+  - pip:
+      - tensorflow==2.11
+      - csbdeep==0.8.1
+      - stardist==0.8.3
+      - matplotlib~=3.8.4
+      - notebook~=7.2.2
+      - ipykernel
+      - ipympl
+      - numpy~=1.23.5
+      - scikit-learn~=1.5.2
+      - scikit-image~=0.22.0
+      - h5py~=3.12.1
+      - tifffile~=2024.9.20
+      - tqdm~=4.67.1
+      - scipy~=1.11.4
+      - pillow~=11.0
+      - -e .
