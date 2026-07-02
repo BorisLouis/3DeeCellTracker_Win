@@ -41,6 +41,70 @@ To install 3DeeCellTracker, please follow the instructions below:
 
 If you encounter any issues or have any questions, please refer to the project's documentation or raise an issue in the GitHub repository.
 
+### Local notebook setup for this fork
+
+This fork can be tested outside Google Colab while still using the example Jupyter notebooks.
+
+1. Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html) or Anaconda.
+
+2. From an Anaconda/Miniconda Prompt, open the repository folder and create the environment:
+
+   ```console
+   $ cd "C:\path\to\3DeeCellTracker_Win"
+   $ conda env create -f environment.yml
+   $ conda activate track
+   ```
+
+   If the environment already exists, update it instead:
+
+   ```console
+   $ conda env update -f environment.yml --prune
+   $ conda activate track
+   ```
+
+3. Check that the local environment imports correctly:
+
+   ```console
+   $ python check_environment.py
+   ```
+
+   On native Windows, TensorFlow 2.11 is expected to run on CPU only. If the script prints `TensorFlow GPUs: []`, the notebooks can still run, but training and prediction may be slow.
+
+4. Download the StarDist demo data and pretrained models from [Data for StarDist-based notebooks](https://osf.io/pgr95/). Extract the folders at the repository root, for example:
+
+   ```text
+   3DeeCellTracker_Win/
+     stardist_models/
+       stardist_worm1/
+       stardist_worm4/
+     ffn_models/
+       ffn_worm4.h5
+     worm4/
+       data/
+         raw_t0001_z0001.tif
+         ...
+   ```
+
+   Make sure the demo data extraction is complete. For Worm4, each time point should contain many z-slices; if `worm4/data/*t0001*.tif` only finds a few files, the data download or extraction is incomplete.
+
+5. Start Jupyter Notebook:
+
+   ```console
+   $ jupyter notebook
+   ```
+
+   For Worm4, use `Examples/use_stardist/track_stardist_ensemble_mode.ipynb`. If the models are stored at the repository root while the notebook is under `Examples/use_stardist`, use paths such as:
+
+   ```python
+   model = sdw.load_stardist_model(
+       model_name="stardist_worm4",
+       basedir="../../stardist_models",
+   )
+
+   path_raw_images = "../../worm4/data/*t%04d*.tif"
+   path_results = "../../worm4/"
+   ```
+
 ## Quick Start
 - **Important**: Please use the notebooks [here](https://github.com/WenChentao/3DeeCellTracker/tree/v1.0.0) if you installed version 1.0.0 from PyPI. If you installed from the source code available at this repository, use the notebooks provided below.
 
