@@ -118,13 +118,13 @@ After checking the available dimensions and channels, export the channel to anal
 
 ```console
 $ conda activate track
-$ python tools/convert_nd2_to_tracker_tiffs.py "G:\My Drive\GoogleColab\Deep Learnin_Farsai\24h_10J.nd2" "datasets\24h_10J" --channel 0
+$ python tools/convert_nd2_to_tracker_tiffs.py "G:\My Drive\GoogleColab\Deep Learnin_Farsai\24h_10J.nd2" --channel 0
 ```
 
 This writes files such as:
 
 ```text
-datasets/24h_10J/
+G:/My Drive/GoogleColab/Deep Learnin_Farsai/24h_10J/
   data/
     raw_t0001_z0001.tif
     raw_t0001_z0002.tif
@@ -134,17 +134,23 @@ datasets/24h_10J/
 Use this path pattern in the notebook:
 
 ```python
-path_raw_images = "../../datasets/24h_10J/data/*t%04d*.tif"
-path_results = "../../datasets/24h_10J/"
+path_raw_images = "G:/My Drive/GoogleColab/Deep Learnin_Farsai/24h_10J/data/*t%04d*.tif"
+path_results = "G:/My Drive/GoogleColab/Deep Learnin_Farsai/24h_10J/"
 ```
 
 If the ND2 file contains multiple channels, either export the channel to analyze with `--channel 0`, `--channel 1`, etc., or export all channels separately:
 
 ```console
-$ python tools/convert_nd2_to_tracker_tiffs.py "G:\My Drive\GoogleColab\Deep Learnin_Farsai\24h_10J.nd2" "datasets\24h_10J" --all-channels
+$ python tools/convert_nd2_to_tracker_tiffs.py "G:\My Drive\GoogleColab\Deep Learnin_Farsai\24h_10J.nd2" --all-channels
 ```
 
-The `--all-channels` option writes one folder per channel, for example `datasets/24h_10J/channel_000/data/`. Keep channels in separate folders, or include the channel in the notebook glob pattern, so slices from different channels are not mixed in the same 3D stack.
+The `--all-channels` option writes one folder per channel, for example `G:/My Drive/GoogleColab/Deep Learnin_Farsai/24h_10J/channel_000/data/`. Keep channels in separate folders, or include the channel in the notebook glob pattern, so slices from different channels are not mixed in the same 3D stack.
+
+To save somewhere else, provide an explicit output folder after the ND2 path:
+
+```console
+$ python tools/convert_nd2_to_tracker_tiffs.py "G:\My Drive\GoogleColab\Deep Learnin_Farsai\24h_10J.nd2" "datasets\24h_10J" --channel 0
+```
 
 The converter supports both 2D time-lapse ND2 files and 3D z-stack ND2 files. If the ND2 file has no `Z` axis, each timepoint is exported as a single z-slice (`z0001`). If a `Z` axis is present, all z-slices are exported for each timepoint.
 

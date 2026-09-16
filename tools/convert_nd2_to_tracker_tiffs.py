@@ -1,8 +1,17 @@
 """Convert an ND2 time-lapse stack to 3DeeCellTracker TIFF slices.
 
-The default output layout is:
+The default output layout is next to the input ND2 file:
 
-    output_dir/
+    input_folder/
+      input_file_stem/
+        data/
+          raw_t0001_z0001.tif
+          raw_t0001_z0002.tif
+          raw_t0002_z0001.tif
+
+If an output directory is provided explicitly, the layout is:
+
+    custom_output_dir/
       data/
         raw_t0001_z0001.tif
         raw_t0001_z0002.tif
@@ -38,7 +47,11 @@ def parse_args() -> argparse.Namespace:
         "output_dir",
         type=Path,
         nargs="?",
-        help="Output dataset folder. TIFF slices are written under output_dir/data.",
+        help=(
+            "Optional output dataset folder. If omitted, a folder named after the "
+            "ND2 file is created next to the ND2 file. TIFF slices are written "
+            "under output_dir/data."
+        ),
     )
     parser.add_argument(
         "--channel",
@@ -186,8 +199,9 @@ def main() -> None:
             print("Warning: no Z axis was found. Conversion will create one z-slice per timepoint.")
         data = normalize_to_tczyx(nd2_file.asarray(), axes)
 
-    if args.output_dir is None:
-        raise SystemExit("output_dir is required unless --inspect is used.")
+    output_dir = args.output_dir
+    if output_dir is None:
+        output_dir = args.input_nd2.with_suffix("")
 
     if args.max_timepoints is not None:
         data = data[: args.max_timepoints]
@@ -204,6 +218,7 @@ def main() -> None:
 
     summary = {
         "input_nd2": str(args.input_nd2),
+        "output_dir": str(output_dir),
         "original_sizes": sizes,
         "normalized_shape_tczyx": list(data.shape),
         "exported_channels": channel_indices,
@@ -213,9 +228,9 @@ def main() -> None:
     total_written = 0
     for channel_index in channel_indices:
         if args.all_channels:
-            output_data_dir = args.output_dir / f"channel_{channel_index:03d}" / "data"
+            output_data_dir = output_dir / f"channel_{channel_index:03d}" / "data"
         else:
-            output_data_dir = args.output_dir / "data"
+            output_data_dir = output_dir / "data"
 
         total_written += write_channel(
             data[:, channel_index],
@@ -228,16 +243,16 @@ def main() -> None:
             overwrite=args.overwrite,
         )
 
-    args.output_dir.mkdir(parents=True, exist_ok=True)
-    metadata_path = args.output_dir / "conversion_metadata.json"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    metadata_path = output_dir / "conversion_metadata.json"
     metadata_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
 
     print(f"Wrote {total_written} TIFF files.")
     print(f"Metadata: {metadata_path}")
     if args.all_channels:
-        print("Notebook path pattern example: output_dir/channel_000/data/*t%04d*.tif")
+        print(f"Notebook path pattern example: {output_dir / 'channel_000' / 'data' / '*t%04d*.tif'}")
     else:
-        print("Notebook path pattern example: output_dir/data/*t%04d*.tif")
+        print(f"Notebook path pattern example: {output_dir / 'data' / '*t%04d*.tif'}")
 
 
 if __name__ == "__main__":
