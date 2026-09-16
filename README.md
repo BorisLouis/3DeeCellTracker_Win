@@ -105,6 +105,49 @@ This fork can be tested outside Google Colab while still using the example Jupyt
    path_results = "../../worm4/"
    ```
 
+### Convert ND2 data for 3DeeCellTracker
+
+Raw microscopy data in `.nd2` format can be converted to the TIFF-slice layout expected by the notebooks:
+
+```console
+$ conda activate track
+$ python tools/convert_nd2_to_tracker_tiffs.py "G:\My Drive\GoogleColab\Deep Learnin_Farsai\24h_10J.nd2" --inspect
+```
+
+After checking the available dimensions and channels, export the channel to analyze:
+
+```console
+$ conda activate track
+$ python tools/convert_nd2_to_tracker_tiffs.py "G:\My Drive\GoogleColab\Deep Learnin_Farsai\24h_10J.nd2" "datasets\24h_10J" --channel 0
+```
+
+This writes files such as:
+
+```text
+datasets/24h_10J/
+  data/
+    raw_t0001_z0001.tif
+    raw_t0001_z0002.tif
+    raw_t0002_z0001.tif
+```
+
+Use this path pattern in the notebook:
+
+```python
+path_raw_images = "../../datasets/24h_10J/data/*t%04d*.tif"
+path_results = "../../datasets/24h_10J/"
+```
+
+If the ND2 file contains multiple channels, either export the channel to analyze with `--channel 0`, `--channel 1`, etc., or export all channels separately:
+
+```console
+$ python tools/convert_nd2_to_tracker_tiffs.py "G:\My Drive\GoogleColab\Deep Learnin_Farsai\24h_10J.nd2" "datasets\24h_10J" --all-channels
+```
+
+The `--all-channels` option writes one folder per channel, for example `datasets/24h_10J/channel_000/data/`. Keep channels in separate folders, or include the channel in the notebook glob pattern, so slices from different channels are not mixed in the same 3D stack.
+
+The converter supports both 2D time-lapse ND2 files and 3D z-stack ND2 files. If the ND2 file has no `Z` axis, each timepoint is exported as a single z-slice (`z0001`). If a `Z` axis is present, all z-slices are exported for each timepoint.
+
 ## Quick Start
 - **Important**: Please use the notebooks [here](https://github.com/WenChentao/3DeeCellTracker/tree/v1.0.0) if you installed version 1.0.0 from PyPI. If you installed from the source code available at this repository, use the notebooks provided below.
 

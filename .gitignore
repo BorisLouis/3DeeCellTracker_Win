@@ -1,5 +1,6 @@
 # Local demo/test data
 /worm4/
+/datasets/
 
 # Python and Jupyter generated files
 __pycache__/

@@ -12,6 +12,7 @@ MODULES = [
     "stardist",
     "matplotlib",
     "notebook",
+    "nd2",
     "numpy",
     "sklearn",
     "skimage",
